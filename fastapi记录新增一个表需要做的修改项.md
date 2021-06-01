@@ -1,9 +1,9 @@
-fastapi:记录新增一个表需要做的修改项
+## fastapi:记录新增一个表需要做的修改项
 
 
+- 1.在app/models下创建iotdevice.py文件，输入一下内容
 
-在app/models下创建iotdevice.py文件，输入一下内容
-
+```
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, ForeignKey, Integer, String
@@ -25,18 +25,21 @@ class IotDevice(Base):
 
     owner_id = Column(Integer, ForeignKey("user.id"))
     owner = relationship("User", back_populates="iot_doorlock")
+```
 
-修改app/models/__init__.py
-添加
-from .iotdevice import IotDevice
-
-修改app/models/user.py文件
-在class User(Base):新增关系
-iotdevice = relationship("IotDevice", back_populates="owner")
+- 2.修改`app/models/__init__.py`  
+添加  
+`from .iotdevice import IotDevice`
 
 
-在app/schemas目录创建iotdevice.py，输入以下内容
+- 3.修改`app/models/user.py`文件  
+在`class User(Base):`新增关系  
+`iotdevice = relationship("IotDevice", back_populates="owner")`
 
+
+- 4.`在app/schemas`目录创建`iotdevice.py`，输入以下内容  
+
+```
 from typing import Optional
 
 from pydantic import BaseModel
@@ -57,19 +60,21 @@ class IotDeviceInDBNfc(IotDeviceBase):
 
 class IotDeviceInDBBt(IotDeviceBase):
     bluetooth: str
+```
 
 
-修改app/schemas/__init__.py文件
-添加
-from .iotdevice import IotDeviceBase, IotDeviceInDBBase, IotDeviceInDBNfc, IotDeviceInDBBt
+- 5.修改`app/schemas/__init__.py`文件  
+添加  
+`from .iotdevice import IotDeviceBase, IotDeviceInDBBase, IotDeviceInDBNfc, IotDeviceInDBBt`
 
 
+- 6.修改`app/db/base.py`文件  
+增加  
+`from app.models.iotdevice import IotDevice`
 
-修改app/db/base.py文件
-增加
-from app.models.iotdevice import IotDevice
+- 7.在`app/crud/`目录下新建`crud_iotdevice.py`文件，输入以下内容  
 
-在app/crud/目录下新建crud_iotdevice.py文件，输入以下内容
+```
 from typing import List
  
 from fastapi.encoders import jsonable_encoder
@@ -84,13 +89,14 @@ class CRUDDevice(CRUDBase[IotDevice, IotDevice, IotDevice]):
     pass
 
 iotdevice = CRUDDevice(IotDevice)
+```
 
 
-修改app/crud/__init__.py文件
-from .crud_iotdevice import iotdevice
+- 8.修改`app/crud/__init__.py`文件  
+`from .crud_iotdevice import iotdevice`  
 
 
 
 
 
-
+end
